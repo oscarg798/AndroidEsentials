@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AndroidEsentials</string>
+
+
+    <string name="alert_label">Alerta</string>
+    <string name="cancel_label">Cancelar</string>
+    <string name="acept_label">Aceptar</string>
+</resources>
