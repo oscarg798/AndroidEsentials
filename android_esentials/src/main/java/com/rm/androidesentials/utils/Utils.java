@@ -41,9 +41,10 @@ public class Utils {
     public static final String REFERENCE= "photoreference=";
     public static final String APIKEY = "key=";
     public static final String INTERROGATION__SYMBOL="?";
-
-
-
+    public static final String POST_SERVICE_TYPE = "POST";
+    public static final String GET_SERVICE_TYPE = "GET";
+    public static final String PUT_SERVICE_TYPE = "PUT";
+    public static final String DEL_SERVICE_TYPE = "DEL";
 
 
     public static String organizePostServicesParametres(List<CoupleParams> couplePostParams) {

@@ -1,5 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
 
+group = 'com.rm.androidesentials'
+version = '1.0.3'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
@@ -8,7 +12,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.3"
     }
     buildTypes {
         release {
@@ -18,6 +22,31 @@ android {
     }
 }
 
+bintray {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+    user = properties.getProperty("bintray_user")
+    key = properties.getProperty("bintray_apikey")
+    pkg {
+        repo = 'maven'
+        name = 'AndroidEsentials' // the name of the package in BinTray
+
+        version {
+            name = 'AndroidEsentials' // the name of your library project
+            desc = 'This is the first version'
+            released  = new Date()
+            vcsTag = '1.0.3' // the version
+        }
+
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/oscarg798/AndroidEsentials.git' // your GitHub repo
+        websiteUrl = 'https://github.com/oscarg798/AndroidEsentials' // your website or whatever has documentation
+    }
+    configurations = ['archives']
+}
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
@@ -25,4 +54,23 @@ dependencies {
     compile 'com.google.android.gms:play-services-wearable:8.4.0'
     compile 'com.google.android.support:wearable:1.4.0'
 
+}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
 }

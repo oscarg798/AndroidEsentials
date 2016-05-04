@@ -38,7 +38,7 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
      */
     private String servicesType = null;
 
-    private final int readTimeOut=20000;
+    private final int readTimeOut = 20000;
 
     private final int connectionTimeOut = 20000;
 
@@ -96,7 +96,7 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
         }
         try {
 
-            if(this.isPlainUrlServices){
+            if (this.isPlainUrlServices) {
                 /**
                  * Damos formato a los parametros para enviarlos por
                  * la url al backend
@@ -123,9 +123,11 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
             httpURLConnection.setConnectTimeout(this.connectionTimeOut);
 
             /**
-             * Indicamos que es post ??
+             * Si el tipo de servicio es post indicamos
              */
-            httpURLConnection.setDoOutput(true);
+            if (this.servicesType.equals(Utils.POST_SERVICE_TYPE)) {
+                httpURLConnection.setDoOutput(true);
+            }
 
             /**
              * Le decimos que no hay iteraccion con el usuario
@@ -142,7 +144,7 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
              */
             httpURLConnection.setRequestMethod(this.servicesType);
 
-            if(!this.isPlainUrlServices){
+            if (!this.isPlainUrlServices) {
                 OutputStream outputStream = httpURLConnection.getOutputStream();
 
                 BufferedWriter writer = new BufferedWriter(
@@ -215,7 +217,6 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
 
 
     }
-
 
 
 }
