@@ -144,6 +144,8 @@ public class AbstractController {
                     }
                 });
 
+        builder.setCancelable(false);
+
         /**
          * Mostramos el dialogo
          */
@@ -173,6 +175,7 @@ public class AbstractController {
 
         builder.setPositiveButton(postiveButtonTitle, onCLickListenerPositiveButton);
 
+        builder.setCancelable(false);
 
         /**
          * Mostramos el dialogo
@@ -226,6 +229,7 @@ public class AbstractController {
             builder.setNegativeButton(negativeButtonTitle, onCLickListenerNegativeButton);
         }
 
+        builder.setCancelable(false);
 
         /**
          * Mostramos el dialogo

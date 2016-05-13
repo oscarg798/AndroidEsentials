@@ -3,7 +3,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.rm.androidesentials'
-version = '1.0.3'
+version = '1.0.4'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
@@ -12,7 +12,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0.3"
+        versionName "1.0.4"
     }
     buildTypes {
         release {
@@ -36,7 +36,7 @@ bintray {
             name = 'AndroidEsentials' // the name of your library project
             desc = 'This is the first version'
             released  = new Date()
-            vcsTag = '1.0.3' // the version
+            vcsTag = '1.0.4' // the version
         }
 
         licenses = ['Apache-2.0']
