@@ -1,15 +1,18 @@
 package com.rm.androidesentials.model.utils;
 
+import java.io.Serializable;
+
 /**
  * Created by oscargallon on 4/4/16.
  */
-public class CoupleParams {
+public class CoupleParams implements Serializable{
 
     private final String key;
     private final String param;
-    private final Object object;
 
-    private CoupleParams(String key, String param, Object object) {
+    private final Serializable object;
+
+    private CoupleParams(String key, String param, Serializable object) {
         this.key = key;
         this.param = param;
         this.object = object;
@@ -33,7 +36,7 @@ public class CoupleParams {
 
         private String nestedKey;
         private String nestedParam;
-        private Object nestedObject;
+        private Serializable nestedObject;
 
         public CoupleParamBuilder(String nestedKey) {
             this.nestedKey = nestedKey;
@@ -44,7 +47,7 @@ public class CoupleParams {
             return this;
         }
 
-        public CoupleParamBuilder nestedObject(Object nestedObject) {
+        public CoupleParamBuilder nestedObject(Serializable nestedObject) {
             this.nestedObject = nestedObject;
             return this;
         }

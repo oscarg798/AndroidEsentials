@@ -9,15 +9,19 @@ import com.rm.androidesentials.services.interfaces.IHTTPServices;
 import com.rm.androidesentials.utils.Utils;
 import com.rm.androidesentials.utils.Validation;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 
 
@@ -63,6 +67,9 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
      */
     private String ERROR_MESSAGE;
 
+    private final String CONTENT_TYPE = "Content-Type";
+
+    private final String APPLICATION_JSON = "application/json";
 
     /**
      * Lista de parametros a enviar en la peticion
@@ -73,6 +80,7 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
 
     private JSONObject errorJsonObject = null;
 
+    private boolean sendAsRowData;
 
     public HTTPServices(IHTTPServices httpServicesCallback, List<CoupleParams> paramsList,
                         String servicesType, boolean isPlainUrlServices) {
@@ -80,6 +88,15 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
         this.paramsList = paramsList;
         this.servicesType = servicesType;
         this.isPlainUrlServices = isPlainUrlServices;
+    }
+
+    public HTTPServices(IHTTPServices httpServicesCallback, List<CoupleParams> paramsList,
+                        String servicesType, boolean isPlainUrlServices, boolean sendAsRowData) {
+        this.httpServicesCallback = httpServicesCallback;
+        this.paramsList = paramsList;
+        this.servicesType = servicesType;
+        this.isPlainUrlServices = isPlainUrlServices;
+        this.sendAsRowData = sendAsRowData;
     }
 
     @Override
@@ -122,39 +139,39 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
              */
             httpURLConnection.setConnectTimeout(this.connectionTimeOut);
 
-            /**
-             * Si el tipo de servicio es post indicamos
-             */
-            if (this.servicesType.equals(Utils.POST_SERVICE_TYPE)) {
-                httpURLConnection.setDoOutput(true);
-            }
-
-            /**
-             * Le decimos que no hay iteraccion con el usuario
-             */
-            httpURLConnection.setAllowUserInteraction(false);
-
-            /**
-             * AÃ±adimos tiempo maximo de lectura
-             */
-            httpURLConnection.setReadTimeout(this.readTimeOut);
 
             /**
              * LE decimos que el tipo de conexion es POST
              */
             httpURLConnection.setRequestMethod(this.servicesType);
 
+            /**
+             * Si el tipo de servicio es post indicamos
+             */
+            if (this.servicesType.equals(Utils.POST_SERVICE_TYPE)) {
+                httpURLConnection.setDoOutput(true);
+                if (servicesType.equals(Utils.POST_SERVICE_TYPE)) {
+                    httpURLConnection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
+                }
+            }
+
+
+
+
             if (!this.isPlainUrlServices) {
-                OutputStream outputStream = httpURLConnection.getOutputStream();
 
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(outputStream, this.encodingType));
+                if (!sendAsRowData) {
+                    if (!writeData(httpURLConnection)) {
+                        ERROR_MESSAGE = CONNECTION_ERROR;
+                        return false;
+                    }
+                } else {
+                    if(!writeRawData(httpURLConnection)){
+                        ERROR_MESSAGE = CONNECTION_ERROR;
+                        return false;
+                    }
+                }
 
-                writer.write(Utils.organizePostServicesParametres(this.paramsList));
-
-                writer.flush();
-                writer.close();
-                outputStream.close();
             }
 
             /**
@@ -204,6 +221,52 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
 
 
         return true;
+    }
+
+    private boolean writeRawData(HttpURLConnection httpURLConnection) {
+
+        try {
+            JSONObject jsonParam = new JSONObject();
+            for (CoupleParams coupleParams : this.paramsList) {
+                jsonParam.put(coupleParams.getKey(), coupleParams.getParam());
+            }
+            DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(dataOutputStream, this.encodingType));
+            writer.write(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
+
+
+            writer.flush();
+            writer.close();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+
+    }
+
+    private boolean writeData(HttpURLConnection httpURLConnection) {
+
+        try {
+            OutputStream outputStream = null;
+            outputStream = httpURLConnection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(outputStream, this.encodingType));
+
+            writer.write(Utils.organizePostServicesParametres(this.paramsList));
+
+            writer.flush();
+            writer.close();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+
+
     }
 
 

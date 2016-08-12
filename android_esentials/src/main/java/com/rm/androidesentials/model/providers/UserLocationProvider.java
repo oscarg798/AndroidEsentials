@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class UserLocationProvider extends Service implements LocationListener {
 
-    private LocationManager locationManager;
+    private static LocationManager locationManager;
 
     private boolean canGetLocation = false;
 
@@ -45,7 +45,7 @@ public class UserLocationProvider extends Service implements LocationListener {
 
     private UserLocationProvider(Context context) {
         this.context = context;
-        this.locationManager = (LocationManager) this.context
+        locationManager = (LocationManager) this.context
                 .getSystemService(LOCATION_SERVICE);
         onSubscribeforLocationUpdatesList = new ArrayList<>();
 
@@ -54,6 +54,9 @@ public class UserLocationProvider extends Service implements LocationListener {
     public static UserLocationProvider getLocationProvider(Context context) {
         if (UserLocationProvider == null) {
             UserLocationProvider = new UserLocationProvider(context);
+        } else if (locationManager == null) {
+            locationManager = (LocationManager) context
+                    .getSystemService(LOCATION_SERVICE);
         }
         return UserLocationProvider;
     }
@@ -117,7 +120,7 @@ public class UserLocationProvider extends Service implements LocationListener {
 
     }
 
-    private void unSuscribeLocationUpdates() {
+    public void unSuscribeLocationUpdates() {
         this.onSubscribeforLocationUpdatesList = null;
         if (this.locationManager != null) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
