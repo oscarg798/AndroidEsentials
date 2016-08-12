@@ -25,38 +25,36 @@ public class Validation {
             "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                     + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
-
+    /**
+     * Expresion regular para validar latitudes(coordenadas)
+     */
     private static final String LAT_PATTERN = "(-?[0-8]?[0-9](\\.\\d*)?)|-?90(\\.[0]*)?";
 
+    /**
+     * Expresion regular para validar longitudes(coordenadas)
+     */
     private static final String LNG_PATTERN = "(-?([1]?[0-7][1-9]|[1-9]?[0-9])?(\\.\\d*)?)|-?180(\\.[0]*)?";
 
     /**
-     * Validar que una url tenga un formato
+     * Validar que una url tenga un formato adecuado
      *
      * @param urlString String con la url a validar
      * @return verdadero de ser una url valida, falso de lo contrario
      */
     public static boolean validateURl(String urlString) {
-        if (urlString == null)
-            return false;
-        if (TextUtils.isEmpty(urlString))
-            return false;
-        if (!URLUtil.isValidUrl(urlString))
-            return false;
-
-        return true;
-
+        return (!TextUtils.isEmpty(urlString) || URLUtil.isValidUrl(urlString));
     }
 
     /**
      * Metodo que valida si una fecha tiene el formato correcto
      *
-     * @param fecha fecha a validar
+     * @param fecha  fecha a validar
+     * @param format formato de la fecha a validar ej "yyyy/mm/dd", "yyyy-MM-dd HH:mm:ss.SSSZ"
      * @return verdadero si es correcto falso de lo contrario
      */
-    public static boolean validateDate(String fecha) {
+    public static boolean validateDate(String fecha, String format) {
         try {
-            SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy/mm/dd", Locale.getDefault());
+            SimpleDateFormat formatoFecha = new SimpleDateFormat(format, Locale.getDefault());
             formatoFecha.setLenient(false);
             formatoFecha.parse(fecha);
         } catch (ParseException e) {
@@ -69,15 +67,13 @@ public class Validation {
     /**
      * Metedo para validar un email
      *
-     * @param s email a validar
+     * @param str email a validar
      * @return verdadero si tiene forma de email, falso de lo contrario
      */
-    public static boolean validateEmail(String s) {
+    public static boolean validateEmail(String str) {
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-        Matcher matcher = pattern.matcher(s);
+        Matcher matcher = pattern.matcher(str);
         return matcher.matches();
-
-
     }
 
     /**
@@ -88,116 +84,90 @@ public class Validation {
      * @return verdadero si los string son iguales falso de lo contrario
      */
     public static boolean compareTwoStrings(String s1, String s2) {
-        if (s1.equals(s2))
-            return true;
-        return false;
+        return (s1.equals(s2));
     }
 
-    public static boolean validateStringGretterThatLenght(String s1, int lenght) {
-        if (s1 == null || s1.equals(""))
+    /**
+     * Metodo para verificar si el tamano de una cadena es mayor que el parametro recibido
+     *
+     * @param str
+     * @param length
+     * @return
+     */
+    public static boolean validateLengthGreaterThan(String str, int length) {
+        if (validateStringEmpty(str) || str.length() < length) {
             return false;
-        if (s1.length() < lenght)
-            return false;
+        }
 
         return true;
-
-
     }
 
     /**
      * Metodo que valida un string que no puede ser vacio
      *
-     * @param s string a validar
+     * @param str string a validar
      * @return
      */
-    public static boolean validateStringThanCanNotBeEmpty(String s) {
-        if (s == null)
-            return false;
-        if (s.equals(""))
-            return false;
-        if (s.length() < 4)
-            return false;
-        return true;
+    public static boolean validateStringEmpty(String str) {
+        return (isNull(str) || str.isEmpty());
 
     }
 
-    public static boolean validateLat(String s) {
+    /**
+     * Metodo para validar si el string recibido tiene un formato de latitud correcto
+     *
+     * @param str
+     * @return
+     */
+    public static boolean validateLat(String str) {
         Pattern pattern = Pattern.compile(LAT_PATTERN);
-        Matcher matcher = pattern.matcher(s);
-        return matcher.matches();
-    }
-
-    public static boolean validateLng(String s) {
-        Pattern pattern = Pattern.compile(LNG_PATTERN);
-        Matcher matcher = pattern.matcher(s);
+        Matcher matcher = pattern.matcher(str);
         return matcher.matches();
     }
 
     /**
-     * metodo que valida un String que pueder ser vacio
+     * Metodo para validar si el string recibido tiene un formato de longitud(coordenadas) correcto
      *
-     * @param s string a validar
+     * @param str
      * @return
      */
-    public static boolean validateStringThatCanBeEmpty(String s) {
-        if (s == null)
-            return false;
-        return true;
+    public static boolean validateLng(String str) {
+        Pattern pattern = Pattern.compile(LNG_PATTERN);
+        Matcher matcher = pattern.matcher(str);
+        return matcher.matches();
     }
 
     /**
-     * Valida que el nombre de usuario  tenga la longitud correcta
+     * Metodo que valida un String es nulo
      *
-     * @param s contraseÃ±a a validar
-     * @return verdarero si tiene la longitud adecuada falso de lo contrario
+     * @param str string a validar
+     * @return
      */
-    public static boolean validateUsername(String s) {
-        if (TextUtils.isEmpty(s))
-            return false;
-        if (s.length() < 5)
-            return false;
-
-        return true;
+    public static boolean isNull(String str) {
+        return (str == null);
     }
 
     /**
-     * Valida que la contraseÃ±a  tenga la longitud correcta
+     * Valida si un string tiene solo numeros
      *
-     * @param s contraseÃ±a a validar
-     * @return verdarero si tiene la longitud adecuada falso de lo contrario
-     */
-    public static boolean validatePassword(String s) {
-        if (TextUtils.isEmpty(s))
-            return false;
-        if (s.length() < 6)
-            return false;
-
-        return true;
-    }
-
-    /**
-     * Valida si un string puede tener numeros
-     *
-     * @param s string a validar
+     * @param str string a validar
      * @return verdadero si la cadena de texto son solo numero
      * falso de lo contrario
      */
-    public static boolean validateStringWithNumbers(String s) {
-        if (s.equals(""))
+    public static boolean validateStringWithNumbers(String str) {
+        if (str.isEmpty() || isNull(str)) {
             return false;
-        return TextUtils.isDigitsOnly(s);
+        }
+        return TextUtils.isDigitsOnly(str);
     }
 
-    public static boolean checkConn(Activity activity) {
+    public static boolean checkConnection(Activity activity) {
         ConnectivityManager conMgr = (ConnectivityManager)
                 activity.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo i = conMgr.getActiveNetworkInfo();
-        if (i == null)
+        if (i == null || !i.isConnected() || !i.isAvailable()){
             return false;
-        if (!i.isConnected())
-            return false;
-        if (!i.isAvailable())
-            return false;
+        }
         return true;
 
     }
