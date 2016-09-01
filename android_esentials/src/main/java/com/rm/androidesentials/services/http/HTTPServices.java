@@ -82,11 +82,23 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
 
     private boolean sendAsRowData;
 
+    private List<CoupleParams> headerParams;
+
     public HTTPServices(IHTTPServices httpServicesCallback, List<CoupleParams> paramsList,
                         String servicesType, boolean isPlainUrlServices) {
         this.httpServicesCallback = httpServicesCallback;
         this.paramsList = paramsList;
         this.servicesType = servicesType;
+        this.isPlainUrlServices = isPlainUrlServices;
+    }
+
+    public HTTPServices(IHTTPServices httpServicesCallback, List<CoupleParams> paramsList,
+                        List<CoupleParams> headerParams,
+                        String servicesType, boolean isPlainUrlServices) {
+        this.httpServicesCallback = httpServicesCallback;
+        this.paramsList = paramsList;
+        this.servicesType = servicesType;
+        this.headerParams = headerParams;
         this.isPlainUrlServices = isPlainUrlServices;
     }
 
@@ -155,7 +167,11 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
                 }
             }
 
-
+            if (this.headerParams != null) {
+                for (CoupleParams coupleParams : headerParams) {
+                    httpURLConnection.setRequestProperty(coupleParams.getKey(), coupleParams.getParam());
+                }
+            }
 
 
             if (!this.isPlainUrlServices) {
@@ -166,7 +182,7 @@ public class HTTPServices extends AsyncTask<String, String, Boolean> {
                         return false;
                     }
                 } else {
-                    if(!writeRawData(httpURLConnection)){
+                    if (!writeRawData(httpURLConnection)) {
                         ERROR_MESSAGE = CONNECTION_ERROR;
                         return false;
                     }
